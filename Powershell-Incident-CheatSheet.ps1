@@ -20,6 +20,7 @@ Get-Process | Select-Object -Property Path, Name, Id | Where-Object -Property Pa
 Get-Process | Select-Object -Property Path, Name, Id | Where-Object -Property Id -eq process_id | Stop-Process
 
 
+
 ######## NETWORK ENUMERATION ########
 
 # Return a list of network connections for the host
@@ -28,6 +29,7 @@ Get-NetTCPConnection
 # Return a list of network connection for the host and all or specific properties
 Get-NetTCPConnection | Select-Object -Property *
 Get-NetTCPConnection | Select-Object -Property LocalAddress, LocalPort, State, OwningProcess
+
 
 
 ######## Registry Startup Keys ########
@@ -49,7 +51,6 @@ Remove-ItemProperty -Path "HKCU:Software\Microsoft\Windows\CurrentVersion\Run" -
 # Confirm the ASEP value has been removed by running Get-ItemProperty again, should return an error because it does not exist
 Get-ItemProperty "HKCU:Software\Microsoft\Windows\CurrentVersion\Run\Run_Key_Name"
 
-
 # Remove the program
 Remove-Item \Path\to\program\program.exe
 # Confirm it has been removed by rerunning same command, should return an error because it does not exist
@@ -57,8 +58,23 @@ Remove-Item \Path\to\program\program.exe
 
 
 
-######## Differential Analysis ########
+######## Scheduled Tasks ########
 
+# Return a list of scheduled tasks
+Get-ScheduledTask
+
+# Return a scheduled task by name
+Get-ScheduledTask task_name
+
+# Return a scheduled task by name and all of its properties
+Get-ScheduledTask task_name | Select-Object -Property *
+
+# Return additional content of the task using the task name and the Export-ScheduledTask cmdlet
+Export-ScheduledTask -TaskName "task_name"
+
+
+
+######## Differential Analysis ########
 
 # This assumes that there is a baseline present for services, users, scheduled tasks, and listening TCP ports. If there is no baseline available, spin up a golden image of the system and grab the baseline from that
 
@@ -78,21 +94,9 @@ $services_baseline = Get-Content services_baseline.txt
 Compare-Object $services_baseline $services_current
 
 
-######## Scheduled Tasks ########
-# Return a list of scheduled tasks
-Get-ScheduledTask
-
-# Return a scheduled task by name
-Get-ScheduledTask task_name
-
-# Return a scheduled task by name and all of its properties
-Get-ScheduledTask task_name | Select-Object -Property *
-
-# Return additional content of the task using the task name and the Export-ScheduledTask cmdlet
-Export-ScheduledTask -TaskName "task_name"
-
 
 ######## Remove the IOCs ########
+
 # Stop service
 Stop-Service -Name service_name
 
