@@ -13,11 +13,11 @@ Get-Process process_name | Select-Object -Property *
 Get-Process process_name | Select-Object -Property Path, Name, Id
 Get-Process | Select-Object -Property Path, Name, Id | Where-Object -Property Name -eq process_name
 
+# Return certain properties of process by Process ID (Get-CimInstance returns additional information about the process)
+Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq process_id | Select-Object -Property *
+
 # Return processes that are running from a temp directory, i.e. "temp" exists in the Path 
 Get-Process | Select-Object -Property Path, Name, Id | Where-Object -Property Path -Like "*temp*"
-
-## STOP THE PROCESS ##
-Get-Process | Select-Object -Property Path, Name, Id | Where-Object -Property Id -eq process_id | Stop-Process
 
 
 
@@ -74,6 +74,19 @@ Export-ScheduledTask -TaskName "task_name"
 
 
 
+######## Services ########
+
+# Return a list of services
+Get-Service
+
+# Return a service by name
+Get-Service | Where-Object Name -EQ wscsvc
+
+# Return a service by name (Get-CimInstance returns additional information about the service)
+Get-CimInstance -ClassName Win32_Service | Where-Object Name -EQ wscsvc | Select-Object -Property *
+
+
+
 ######## Differential Analysis ########
 
 # This assumes that there is a baseline present for services, users, scheduled tasks, and listening TCP ports. If there is no baseline available, spin up a golden image of the system and grab the baseline from that
@@ -83,7 +96,6 @@ Get-Service | Select-Object -ExpandProperty Name | Out-File services.txt
 Get-LocalUser | Select-Object -ExpandProperty Name | Out-File localusers.txt
 Get-ScheduledTask | Select-Object -ExpandProperty TaskName | Out-File scheduledtasks.txt
 Get-NetTCPConnection -State Listen | Out-File tcpports.txt
-
 
 # Assign the files to variables respectively to compare with baselines
 $services_current = Get-Content services.txt
