@@ -72,7 +72,7 @@ $services_current = Get-Content .\services.txt
 $services_baseline = Get-Content services_baseline.txt
 
 # Compare the current running services with the services from the baseline file, repeat this step for localusers and scheduledtasks
-# The output will show the difference between the two file, i.e. service running currently that were not in the baseline
+# The output will show the difference between the two files, i.e. service running currently that were not in the baseline
 Compare-Object $services_baseline $services_current
 
 
