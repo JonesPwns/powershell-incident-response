@@ -60,18 +60,20 @@ Remove-Item \Path\to\program\program.exe
 ######## Differential Analysis ########
 
 
-# This assumes that there is a baseline present for services, users, and scheduled tasks. If there is no baseline available, one can spin up a golden image and grab the baseline from that
+# This assumes that there is a baseline present for services, users, scheduled tasks, and listening TCP ports. If there is no baseline available, spin up a golden image of the system and grab the baseline from that
 
-# Capture running services, users, and scheduledtasks and save to files respectively
+# Capture running services, users, scheduledtasks, and listening TCP ports and then save to files
 Get-Service | Select-Object -ExpandProperty Name | Out-File services.txt
 Get-LocalUser | Select-Object -ExpandProperty Name | Out-File localusers.txt
 Get-ScheduledTask | Select-Object -ExpandProperty TaskName | Out-File scheduledtasks.txt
+Get-NetTCPConnection -State Listen | Out-File tcpports.txt
 
-# Save the files to variables respectively to compare with baselines
-$services_current = Get-Content .\services.txt
+
+# Assign the files to variables respectively to compare with baselines
+$services_current = Get-Content services.txt
 $services_baseline = Get-Content services_baseline.txt
 
-# Compare the current running services with the services from the baseline file, repeat this step for localusers and scheduledtasks
+# Compare the current running services with the services from the baseline file, repeat this step for localusers, scheduledtasks, and listening TCP ports
 # The output will show the difference between the two files, i.e. service running currently that were not in the baseline
 Compare-Object $services_baseline $services_current
 
