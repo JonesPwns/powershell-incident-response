@@ -91,17 +91,20 @@ Export-ScheduledTask -TaskName "task_name"
 
 
 ######## Remove the IOCs ########
-# Remove service
-Stop-Service -Name Dynamics
+# Stop service
+Stop-Service -Name service_name
 
-# Remove process
-Get-Process dynamics | Stop-Process
+# Remove service (Alternatively, you can run "sc.exe delete service_name" to delete the service)
+(Get-WmiObject -Class Win32_Service -Filter "Name='service_name'").delete()
 
-# Remove program
-Remove-Item C:\Windows\Dynamics.exe
+# Stop process
+Get-Process process_name | Stop-Process
 
-# Remove scheduled task
-nregister-ScheduledTask -TaskName "task_name"
+# Delete program
+Remove-Item \Path\To\Program\program_name.exe
+
+# Delete scheduled task
+Unregister-ScheduledTask -TaskName "task_name"
 
 # Remove user
 Remove-LocalUser -Name user_name
